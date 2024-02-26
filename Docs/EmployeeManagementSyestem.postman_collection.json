@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "0d5ef804-ed42-4d36-b0bf-8fcb8e53765e",
+		"name": "EmployeeManagementSyestem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21897253"
+	},
+	"item": [
+		{
+			"name": "addEmployee",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \r\n    \"name\":\"yadhu\",\r\n    \"email\":\"yadhu@gmail.com\",\r\n    \"department\":\"cs1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/employee",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"employee"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getEmployeeById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/employee/id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"employee",
+						"id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getByDepartment",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/employee/department/department",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"employee",
+						"department",
+						"department"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
