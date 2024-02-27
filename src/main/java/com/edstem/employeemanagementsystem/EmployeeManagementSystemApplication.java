@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class EmployeeManagementsystemApplication {
+public class EmployeeManagementSystemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(EmployeeManagementsystemApplication.class, args);
+		SpringApplication.run(EmployeeManagementSystemApplication.class, args);
 	}
 	@Bean
 	public ModelMapper modelMapper() {

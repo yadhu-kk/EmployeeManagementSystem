@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "employee")
@@ -19,12 +19,9 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(name = "user_name",nullable = false,length = 150)
-    @NotEmpty(message="please enter your name")
     private String name;
-    @NotEmpty(message = "enter a valid email address")
     @Email(message = "validation error")
     private String email;
-    @NotEmpty(message = "enter a valid department")
     private String department;
 
 }
