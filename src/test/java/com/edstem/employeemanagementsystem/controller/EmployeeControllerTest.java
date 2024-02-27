@@ -1,75 +1,68 @@
 package com.edstem.employeemanagementsystem.controller;
-
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.edstem.employeemanagementsystem.contract.EmployeeRequest;
 import com.edstem.employeemanagementsystem.contract.EmployeeResponse;
 import com.edstem.employeemanagementsystem.service.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.catalina.User;
-import org.apache.catalina.realm.UserDatabaseRealm;
-import org.apache.catalina.users.MemoryUserDatabase;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
+@SpringBootTest
+@AutoConfigureMockMvc
+public class EmployeeControllerTest {
+    @Autowired private MockMvc mockMvc;
+    @MockBean private EmployeeService employeeService;
 
-@ContextConfiguration(classes = {EmployeeController.class})
-@ExtendWith(SpringExtension.class)
-class EmployeeControllerTest {
-    @Autowired
-    private EmployeeController employeeController;
-
-    @MockBean
-    private EmployeeService employeeService;
     @Test
     void testAddEmployee() throws Exception {
-        MockHttpServletRequestBuilder contentTypeResult = MockMvcRequestBuilders.get("/employee")
-                .contentType(MediaType.APPLICATION_JSON);
+        EmployeeRequest request = new EmployeeRequest("yadhu", "yadhu@gmail.com", "cs");
+        EmployeeResponse expectedResponse =
+                new EmployeeResponse(1L, "yadhu", "yadhu@gmail.com", "cs");
+        when(employeeService.addEmployee(any(EmployeeRequest.class))).thenReturn(expectedResponse);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        MockHttpServletRequestBuilder requestBuilder = contentTypeResult
-                .content(objectMapper.writeValueAsString(new EmployeeRequest()));
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(employeeController)
-                .build()
-                .perform(requestBuilder);
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(405));
+        mockMvc.perform(
+                        post("/employee")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(new ObjectMapper().writeValueAsString(expectedResponse)));
     }
+
     @Test
-    void testGetEmployeeById() throws Exception {
-        when(employeeService.getEmployeeById(anyLong())).thenReturn(new EmployeeResponse());
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/employee/{id}", 1L);
-        MockMvcBuilders.standaloneSetup(employeeController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(
-                        MockMvcResultMatchers.content().string("{\"id\":null,\"name\":null,\"email\":null,\"department\":null}"));
+    void testViewEmployeeById() throws Exception {
+        Long id = 1L;
+        EmployeeResponse expectedResponse =
+                new EmployeeResponse(1L, "yadhu", "yadhu@gmail.com", "cs");
+        when(employeeService.getEmployeeById(id)).thenReturn(expectedResponse);
+
+        mockMvc.perform(get("/employee/" + id))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(new ObjectMapper().writeValueAsString(expectedResponse)));
     }
+
     @Test
     void testGetEmployeeByDepartment() throws Exception {
-        when(employeeService.getByDepartment(Mockito.<String>any())).thenReturn(new ArrayList<>());
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/employee/department/{department}",
-                "Department");
-        MockMvcBuilders.standaloneSetup(employeeController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("[]"));
+        String department = "cs";
+        List<EmployeeResponse> employeeResponse = new ArrayList<>();
+        employeeResponse.add(new EmployeeResponse(1L, "yadhu", "yadhu@gmail.com", department));
+        when(employeeService.getByDepartment(department)).thenReturn(employeeResponse);
+        mockMvc.perform(get("/employee/department/" + department))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(new ObjectMapper().writeValueAsString(employeeResponse)));
     }
 }
